@@ -1,11 +1,14 @@
 package org.maikodev;
 
+import org.maikodev.rendering.LayeredRenderer;
+
 import java.util.Scanner;
 
 public class App {
     public App() {
         isRunning = true;
         coffeeDisplay = new JavaCoffee();
+        renderer = new LayeredRenderer(coffeeDisplay.getDisplay());
 
         input = new Scanner(System.in);
     }
@@ -26,5 +29,6 @@ public class App {
     private Scanner input;
 
     private JavaCoffee coffeeDisplay;
+    private LayeredRenderer renderer;
     private boolean isRunning;
 }
