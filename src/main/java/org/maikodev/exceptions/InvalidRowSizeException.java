@@ -1,4 +1,4 @@
-package org.maikodev;
+package org.maikodev.exceptions;
 
 public class InvalidRowSizeException extends CupLoadException {
     public InvalidRowSizeException(int row) {

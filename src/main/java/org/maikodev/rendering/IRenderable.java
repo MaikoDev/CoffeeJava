@@ -1,4 +1,4 @@
-package org.maikodev;
+package org.maikodev.rendering;
 
 public interface IRenderable {
     char[] getPixelBuffer();

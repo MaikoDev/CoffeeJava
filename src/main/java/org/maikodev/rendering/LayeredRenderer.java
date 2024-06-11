@@ -1,4 +1,4 @@
-package org.maikodev;
+package org.maikodev.rendering;
 
 public class LayeredRenderer {
     public LayeredRenderer(int maxRows, int maxColumns) {

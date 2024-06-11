@@ -1,4 +1,4 @@
-package org.maikodev;
+package org.maikodev.rendering;
 
 import java.util.Arrays;
 
