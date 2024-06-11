@@ -1,9 +1,13 @@
 package org.maikodev.rendering;
 
+import org.maikodev.exceptions.BufferSizeMismatchException;
+import org.maikodev.exceptions.DisplayBufferException;
+
+import java.nio.Buffer;
 import java.util.Arrays;
 
 public class TerminalDisplayBuffer implements IRenderable {
-    public TerminalDisplayBuffer(int rowSize, int columnSize) {
+    public TerminalDisplayBuffer(int rowSize, int columnSize)  {
         this.MAX_ROWS = rowSize;
         this.MAX_COLUMNS = columnSize;
 
@@ -14,22 +18,24 @@ public class TerminalDisplayBuffer implements IRenderable {
     }
 
     /* Should throw an exception */
-    public TerminalDisplayBuffer(char[] pixelBuffer, boolean[] transparencyBuffer, int rowSize, int columnSize) {
+    public TerminalDisplayBuffer(char[] pixelBuffer, boolean[] transparencyBuffer, int rowSize, int columnSize) throws DisplayBufferException {
         this.MAX_ROWS = rowSize;
         this.MAX_COLUMNS = columnSize;
 
         PIXEL_COUNT = rowSize * columnSize;
+        if (pixelBuffer.length != PIXEL_COUNT || transparencyBuffer.length != PIXEL_COUNT) throw new BufferSizeMismatchException();
 
         PIXEL_BUFFER = pixelBuffer;
         TRANSPARENCY_BUFFER = transparencyBuffer;
     }
 
     /* Should throw an exception */
-    public TerminalDisplayBuffer(char[] pixelBuffer, int rowSize, int columnSize) {
+    public TerminalDisplayBuffer(char[] pixelBuffer, int rowSize, int columnSize) throws DisplayBufferException {
         this.MAX_ROWS = rowSize;
         this.MAX_COLUMNS = columnSize;
 
         PIXEL_COUNT = rowSize * columnSize;
+        if (pixelBuffer.length != PIXEL_COUNT) throw new BufferSizeMismatchException();
 
         PIXEL_BUFFER = pixelBuffer;
         TRANSPARENCY_BUFFER = new boolean[PIXEL_BUFFER.length];
@@ -42,8 +48,16 @@ public class TerminalDisplayBuffer implements IRenderable {
     @Override
     public boolean[] getTransparencyBuffer() { return TRANSPARENCY_BUFFER; }
 
+    @Override
+    public int getBufferWidth() { return MAX_COLUMNS; }
+
+    @Override
+    public int getBufferHeight() { return MAX_ROWS; }
+
     public void write(char displayPixel, boolean isVisible, int row, int column) {
         int pixelIndex = getPixelIndex(row, column, MAX_COLUMNS);
+
+        if (pixelIndex >= PIXEL_COUNT) return;
 
         PIXEL_BUFFER[pixelIndex] = displayPixel;
         TRANSPARENCY_BUFFER[pixelIndex] = isVisible;
@@ -53,9 +67,10 @@ public class TerminalDisplayBuffer implements IRenderable {
         write(displayPixel, true, row, column);
     }
 
-    public void writeln(char[] displayPixels, boolean[] isVisible, int row, int column) {
+    public void writeln(char[] displayPixels, boolean[] isVisible, int row, int column) throws DisplayBufferException {
         /* This should probably throw an exception if displayPixel and isVisible are not
          * the same size */
+        if (displayPixels.length != isVisible.length) throw new DisplayBufferException("Provided visibility buffer incompatible with displayPixels!");
 
         for (int columnIndex = column, readPointer = 0; columnIndex < MAX_COLUMNS && readPointer < displayPixels.length; columnIndex++) {
             int pixelIndex = getPixelIndex(row, columnIndex, MAX_COLUMNS);
