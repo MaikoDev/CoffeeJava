@@ -2,6 +2,7 @@ package org.maikodev.rendering;
 
 import org.maikodev.exceptions.BufferSizeMismatchException;
 import org.maikodev.exceptions.DisplayBufferException;
+import org.maikodev.order.RowMajor;
 
 import java.nio.Buffer;
 import java.util.Arrays;
@@ -49,13 +50,27 @@ public class TerminalDisplayBuffer implements IRenderable {
     public boolean[] getTransparencyBuffer() { return TRANSPARENCY_BUFFER; }
 
     @Override
+    public char getPixel(int rowMajorIndex) throws IndexOutOfBoundsException {
+        if (rowMajorIndex < 0 || rowMajorIndex >= PIXEL_COUNT) throw new IndexOutOfBoundsException();
+
+        return (TRANSPARENCY_BUFFER[rowMajorIndex]) ? PIXEL_BUFFER[rowMajorIndex] : ' ';
+    }
+
+    @Override
+    public boolean isPixelVisible(int rowMajorIndex) throws IndexOutOfBoundsException {
+        if (rowMajorIndex < 0 || rowMajorIndex >= PIXEL_COUNT) throw new IndexOutOfBoundsException();
+
+        return TRANSPARENCY_BUFFER[rowMajorIndex];
+    }
+
+    @Override
     public int getBufferWidth() { return MAX_COLUMNS; }
 
     @Override
     public int getBufferHeight() { return MAX_ROWS; }
 
     public void write(char displayPixel, boolean isVisible, int row, int column) {
-        int pixelIndex = getPixelIndex(row, column, MAX_COLUMNS);
+        int pixelIndex = RowMajor.getIndex(row, column, MAX_COLUMNS);
 
         if (pixelIndex >= PIXEL_COUNT) return;
 
@@ -73,7 +88,7 @@ public class TerminalDisplayBuffer implements IRenderable {
         if (displayPixels.length != isVisible.length) throw new DisplayBufferException("Provided visibility buffer incompatible with displayPixels!");
 
         for (int columnIndex = column, readPointer = 0; columnIndex < MAX_COLUMNS && readPointer < displayPixels.length; columnIndex++) {
-            int pixelIndex = getPixelIndex(row, columnIndex, MAX_COLUMNS);
+            int pixelIndex = RowMajor.getIndex(row, columnIndex, MAX_COLUMNS);
 
             PIXEL_BUFFER[pixelIndex] = displayPixels[readPointer];
             TRANSPARENCY_BUFFER[pixelIndex] = isVisible[readPointer];
@@ -97,10 +112,6 @@ public class TerminalDisplayBuffer implements IRenderable {
         Arrays.fill(buffer, true);
 
         return buffer;
-    }
-
-    private static int getPixelIndex(int row, int column, int maxColumns) {
-        return (row * maxColumns) + column;
     }
 
     private final int MAX_ROWS;
