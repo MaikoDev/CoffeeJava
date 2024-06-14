@@ -76,10 +76,10 @@ public class LayeredRenderer {
         while(!DRAW_TASK_QUEUE.isEmpty()) {
             drawPosition = DRAW_TASK_QUEUE.poll();
 
-            bufferPosition = RowMajor.getIndex(drawPosition.row, drawPosition.column, MAX_COLUMNS);
+            bufferPosition = RowMajor.getIndex(drawPosition.y, drawPosition.x, MAX_COLUMNS);
             displayCharacter = DRAW_BUFFER[bufferPosition];
 
-            moveCursor(drawPosition.row, drawPosition.column);
+            moveCursor(drawPosition.y, drawPosition.x);
             CONSOLE_OUT.print(displayCharacter);
 
             DISPLAY_BUFFER[bufferPosition] = displayCharacter;
