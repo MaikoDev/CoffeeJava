@@ -3,6 +3,7 @@ package org.maikodev;
 import org.maikodev.exceptions.CupFileNotFoundException;
 import org.maikodev.exceptions.CupLoadException;
 import org.maikodev.exceptions.InvalidRowSizeException;
+import org.maikodev.rendering.ICompositeLayer;
 import org.maikodev.rendering.TerminalDisplayBuffer;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class JavaCoffee{
+public class JavaCoffee implements ICompositeLayer {
     public JavaCoffee() {
         List<String> cupLines = loadCupFile();
 
