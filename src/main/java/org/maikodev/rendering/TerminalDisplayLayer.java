@@ -15,6 +15,8 @@ public class TerminalDisplayLayer implements IRenderableLayer {
 
         PIXEL_BUFFER = new char[PIXEL_COUNT];
         TRANSPARENCY_BUFFER = new boolean[PIXEL_COUNT];
+
+        Arrays.fill(PIXEL_BUFFER, ' ');
     }
 
     /* Should throw an exception */

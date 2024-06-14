@@ -1,5 +1,6 @@
 package org.maikodev.rendering;
 
+import org.maikodev.order.Position;
 import org.maikodev.order.RowMajor;
 
 import java.io.OutputStream;

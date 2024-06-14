@@ -1,4 +1,4 @@
-package org.maikodev.rendering;
+package org.maikodev.order;
 
 public class Position {
     public Position(int column, int row) {
