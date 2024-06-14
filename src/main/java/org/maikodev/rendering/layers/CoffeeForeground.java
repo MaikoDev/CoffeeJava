@@ -1,10 +1,9 @@
-package org.maikodev;
+package org.maikodev.rendering.layers;
 
 import org.maikodev.exceptions.CupFileNotFoundException;
 import org.maikodev.exceptions.CupLoadException;
 import org.maikodev.exceptions.InvalidRowSizeException;
-import org.maikodev.rendering.ICompositeLayer;
-import org.maikodev.rendering.TerminalDisplayBuffer;
+import org.maikodev.rendering.TerminalDisplayLayer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,17 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class JavaCoffee implements ICompositeLayer {
-    public JavaCoffee() {
+public class CoffeeForeground {
+    public CoffeeForeground() {
         List<String> cupLines = loadCupFile();
 
         int rows = cupLines.size(), columns = cupLines.getLast().length();
         int totalPixels = rows * columns;
 
-        DISPLAY_BUFFER = new TerminalDisplayBuffer(loadCupDisplay(cupLines, totalPixels), rows, columns);
+        DISPLAY_BUFFER = new TerminalDisplayLayer(loadCupDisplay(cupLines, totalPixels), rows, columns);
     }
 
-    public TerminalDisplayBuffer getDisplay() { return DISPLAY_BUFFER; }
+    public TerminalDisplayLayer getDisplay() { return DISPLAY_BUFFER; }
 
     private char[] loadCupDisplay(List<String> cupLines, int totalPixels) {
         char[] displayBuffer = new char[totalPixels];
@@ -70,5 +69,5 @@ public class JavaCoffee implements ICompositeLayer {
         return (row * maxColumns) + column;
     }
 
-    private final TerminalDisplayBuffer DISPLAY_BUFFER;
+    private final TerminalDisplayLayer DISPLAY_BUFFER;
 }

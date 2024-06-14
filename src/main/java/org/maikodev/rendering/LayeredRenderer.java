@@ -27,7 +27,7 @@ public class LayeredRenderer {
         DRAW_TASK_QUEUE = new ConcurrentLinkedQueue<>();
     }*/
 
-    public LayeredRenderer(IRenderable renderable, OutputStream out) throws NullPointerException {
+    public LayeredRenderer(IRenderableLayer renderable, OutputStream out) throws NullPointerException {
         if (renderable == null) throw new NullPointerException();
 
         this.MAX_ROWS = renderable.getBufferHeight();
@@ -42,7 +42,7 @@ public class LayeredRenderer {
         PIXELS_PER_LAYER = MAX_ROWS * MAX_COLUMNS;
         SCHEDULE_POOL = Executors.newFixedThreadPool(5);
 
-        RENDERABLE_LAYERS = new IRenderable[MAX_LAYER_COUNT];
+        RENDERABLE_LAYERS = new IRenderableLayer[MAX_LAYER_COUNT];
         addLayer(renderable, 0);
 
         DISPLAY_BUFFER = new char[PIXELS_PER_LAYER];
@@ -87,14 +87,14 @@ public class LayeredRenderer {
         CONSOLE_OUT.flush();
     }
 
-    public void addLayer(IRenderable renderable, int layer, boolean shouldOverwrite) throws IndexOutOfBoundsException{
+    public void addLayer(IRenderableLayer renderable, int layer, boolean shouldOverwrite) throws IndexOutOfBoundsException{
         if (layer < 0 || layer >= MAX_LAYER_COUNT) throw new IndexOutOfBoundsException();
         if (RENDERABLE_LAYERS[layer] != null && !shouldOverwrite) return;
 
         RENDERABLE_LAYERS[layer] = renderable;
     }
 
-    public void addLayer(IRenderable renderable, int layer) throws IndexOutOfBoundsException {
+    public void addLayer(IRenderableLayer renderable, int layer) throws IndexOutOfBoundsException {
         addLayer(renderable, layer, false);
     }
 
@@ -124,7 +124,7 @@ public class LayeredRenderer {
     private final ExecutorService SCHEDULE_POOL;
     private final ConcurrentLinkedQueue<Position> DRAW_TASK_QUEUE;
 
-    private final IRenderable[] RENDERABLE_LAYERS;
+    private final IRenderableLayer[] RENDERABLE_LAYERS;
     private final char[] DISPLAY_BUFFER;
     private final char[] DRAW_BUFFER;
 

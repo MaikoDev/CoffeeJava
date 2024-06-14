@@ -4,11 +4,10 @@ import org.maikodev.exceptions.BufferSizeMismatchException;
 import org.maikodev.exceptions.DisplayBufferException;
 import org.maikodev.order.RowMajor;
 
-import java.nio.Buffer;
 import java.util.Arrays;
 
-public class TerminalDisplayBuffer implements IRenderable {
-    public TerminalDisplayBuffer(int rowSize, int columnSize)  {
+public class TerminalDisplayLayer implements IRenderableLayer {
+    public TerminalDisplayLayer(int rowSize, int columnSize)  {
         this.MAX_ROWS = rowSize;
         this.MAX_COLUMNS = columnSize;
 
@@ -19,7 +18,7 @@ public class TerminalDisplayBuffer implements IRenderable {
     }
 
     /* Should throw an exception */
-    public TerminalDisplayBuffer(char[] pixelBuffer, boolean[] transparencyBuffer, int rowSize, int columnSize) throws DisplayBufferException {
+    public TerminalDisplayLayer(char[] pixelBuffer, boolean[] transparencyBuffer, int rowSize, int columnSize) throws DisplayBufferException {
         this.MAX_ROWS = rowSize;
         this.MAX_COLUMNS = columnSize;
 
@@ -31,7 +30,7 @@ public class TerminalDisplayBuffer implements IRenderable {
     }
 
     /* Should throw an exception */
-    public TerminalDisplayBuffer(char[] pixelBuffer, int rowSize, int columnSize) throws DisplayBufferException {
+    public TerminalDisplayLayer(char[] pixelBuffer, int rowSize, int columnSize) throws DisplayBufferException {
         this.MAX_ROWS = rowSize;
         this.MAX_COLUMNS = columnSize;
 

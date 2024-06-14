@@ -5,7 +5,7 @@ import org.maikodev.order.RowMajor;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ScheduleDrawTask implements Runnable {
-    public ScheduleDrawTask(IRenderable[] renderables, ConcurrentLinkedQueue<Position> taskQueue, char[] drawBuffer, char[] displayBuffer, int assignedRow, int maxColumns) {
+    public ScheduleDrawTask(IRenderableLayer[] renderables, ConcurrentLinkedQueue<Position> taskQueue, char[] drawBuffer, char[] displayBuffer, int assignedRow, int maxColumns) {
         RENDERABLE_LAYERS = renderables;
         DRAW_TASK_QUEUE = taskQueue;
         DRAW_BUFFER = drawBuffer;
@@ -33,7 +33,7 @@ public class ScheduleDrawTask implements Runnable {
         if (rowMajorIndex >= PIXELS_PER_LAYER) throw new IndexOutOfBoundsException();
         if (depth < 0 || depth >= MAX_LAYER_COUNT) throw new IndexOutOfBoundsException();
 
-        IRenderable renderLayer = RENDERABLE_LAYERS[depth];
+        IRenderableLayer renderLayer = RENDERABLE_LAYERS[depth];
         if (renderLayer == null) {
             if (depth == 0) return ' ';
 
@@ -47,7 +47,7 @@ public class ScheduleDrawTask implements Runnable {
         return renderLayer.getPixel(rowMajorIndex);
     }
 
-    private final IRenderable[] RENDERABLE_LAYERS;
+    private final IRenderableLayer[] RENDERABLE_LAYERS;
     private final ConcurrentLinkedQueue<Position> DRAW_TASK_QUEUE;
     private final char[] DRAW_BUFFER;
     private final char[] DISPLAY_BUFFER;

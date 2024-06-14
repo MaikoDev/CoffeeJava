@@ -1,6 +1,6 @@
 package org.maikodev.rendering;
 
-public interface IRenderable {
+public interface IRenderableLayer {
     char[] getPixelBuffer();
     boolean[] getTransparencyBuffer();
 

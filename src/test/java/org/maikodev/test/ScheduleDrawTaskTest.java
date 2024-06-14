@@ -3,8 +3,8 @@ package org.maikodev.test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.maikodev.JavaCoffee;
-import org.maikodev.rendering.IRenderable;
+import org.maikodev.rendering.layers.CoffeeForeground;
+import org.maikodev.rendering.IRenderableLayer;
 import org.maikodev.rendering.Position;
 import org.maikodev.rendering.ScheduleDrawTask;
 
@@ -17,12 +17,12 @@ public class ScheduleDrawTaskTest {
 
     @Before
     public void Init() throws NoSuchMethodException{
-        coffee = new JavaCoffee();
-        IRenderable coffeeRender = coffee.getDisplay();
+        coffee = new CoffeeForeground();
+        IRenderableLayer coffeeRender = coffee.getDisplay();
 
         MAX_LAYER_COUNT = 5;
 
-        RENDERABLE_LAYERS = new IRenderable[MAX_LAYER_COUNT];
+        RENDERABLE_LAYERS = new IRenderableLayer[MAX_LAYER_COUNT];
         RENDERABLE_LAYERS[0] = coffeeRender;
 
         MAX_COLUMNS = coffeeRender.getBufferWidth();
@@ -50,10 +50,10 @@ public class ScheduleDrawTaskTest {
     }
 
     private Method testMethod;
-    private IRenderable[] RENDERABLE_LAYERS;
+    private IRenderableLayer[] RENDERABLE_LAYERS;
     private char[] DRAW_BUFFER;
 
-    private JavaCoffee coffee;
+    private CoffeeForeground coffee;
 
     private ConcurrentLinkedQueue<Position> TASK_QUEUE;
 
