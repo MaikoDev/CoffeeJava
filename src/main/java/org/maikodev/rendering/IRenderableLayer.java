@@ -7,6 +7,7 @@ public interface IRenderableLayer {
     char getPixel(int rowMajorIndex);
     boolean isPixelVisible(int rowMajorIndex);
 
+    int getPixelCount();
     int getBufferWidth();
     int getBufferHeight();
 }

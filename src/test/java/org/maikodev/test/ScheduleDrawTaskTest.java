@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.maikodev.rendering.layers.CoffeeForeground;
 import org.maikodev.rendering.IRenderableLayer;
 import org.maikodev.order.Position;
-import org.maikodev.rendering.ScheduleDrawTask;
+import org.maikodev.thread.task.ScheduleDrawTask;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

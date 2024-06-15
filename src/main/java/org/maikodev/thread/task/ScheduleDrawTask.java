@@ -1,7 +1,8 @@
-package org.maikodev.rendering;
+package org.maikodev.thread.task;
 
 import org.maikodev.order.Position;
 import org.maikodev.order.RowMajor;
+import org.maikodev.rendering.IRenderableLayer;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

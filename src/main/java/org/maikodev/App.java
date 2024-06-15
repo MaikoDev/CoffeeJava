@@ -21,7 +21,7 @@ public class App {
 
     public void run() throws InterruptedException {
         while (true) {
-            renderer.render();
+            renderer.scheduleDraws();
             renderer.draw();
         }
     }

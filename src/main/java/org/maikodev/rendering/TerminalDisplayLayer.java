@@ -65,6 +65,9 @@ public class TerminalDisplayLayer implements IRenderableLayer {
     }
 
     @Override
+    public int getPixelCount() { return PIXEL_COUNT; }
+
+    @Override
     public int getBufferWidth() { return MAX_COLUMNS; }
 
     @Override

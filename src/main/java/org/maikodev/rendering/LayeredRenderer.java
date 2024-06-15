@@ -2,6 +2,8 @@ package org.maikodev.rendering;
 
 import org.maikodev.order.Position;
 import org.maikodev.order.RowMajor;
+import org.maikodev.thread.task.ScheduleDrawTask;
+import org.maikodev.thread.ThreadPool;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -41,7 +43,7 @@ public class LayeredRenderer {
         CONSOLE_OUT.print(MOVE_CURSOR_ORIGIN);
 
         PIXELS_PER_LAYER = MAX_ROWS * MAX_COLUMNS;
-        SCHEDULE_POOL = Executors.newFixedThreadPool(5);
+        THREAD_POOL = ThreadPool.getPool();
 
         RENDERABLE_LAYERS = new IRenderableLayer[MAX_LAYER_COUNT];
         addLayer(renderable, 0);
@@ -56,14 +58,16 @@ public class LayeredRenderer {
         CONSOLE_OUT.flush();
     }
 
-    public void render() throws InterruptedException {
-        List<Callable<Object>> renderTask = new ArrayList<>();
+    public void scheduleDraws() throws InterruptedException {
+        List<Callable<Object>> scheduleTasks = new ArrayList<>();
 
+        /* Go through every pixel on DRAW_BUFFER and DISPLAY_BUFFER to check if
+         * they are different and need to be redrawn. */
         for (int row = 0; row < MAX_ROWS; row++) {
-            renderTask.add(Executors.callable(new ScheduleDrawTask(RENDERABLE_LAYERS, DRAW_TASK_QUEUE, DRAW_BUFFER, DISPLAY_BUFFER, row, MAX_COLUMNS)));
+            scheduleTasks.add(Executors.callable(new ScheduleDrawTask(RENDERABLE_LAYERS, DRAW_TASK_QUEUE, DRAW_BUFFER, DISPLAY_BUFFER, row, MAX_COLUMNS)));
         }
 
-        SCHEDULE_POOL.invokeAll(renderTask);
+        THREAD_POOL.invokeAll(scheduleTasks);
     }
 
     public void draw() {
@@ -122,7 +126,7 @@ public class LayeredRenderer {
 
     private final PrintWriter CONSOLE_OUT;
 
-    private final ExecutorService SCHEDULE_POOL;
+    private final ExecutorService THREAD_POOL;
     private final ConcurrentLinkedQueue<Position> DRAW_TASK_QUEUE;
 
     private final IRenderableLayer[] RENDERABLE_LAYERS;
