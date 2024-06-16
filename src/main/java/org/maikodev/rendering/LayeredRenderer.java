@@ -55,15 +55,9 @@ public class LayeredRenderer {
     }
 
     public void scheduleDraws() throws InterruptedException {
-        List<Callable<Object>> scheduleTasks = new ArrayList<>();
-
         /* Go through every pixel on DRAW_BUFFER and DISPLAY_BUFFER to check if
          * they are different and need to be redrawn. */
-        for (int row = 0; row < MAX_ROWS; row++) {
-            scheduleTasks.add(Executors.callable(new ScheduleDrawTask(RENDERABLE_LAYERS, DRAW_TASK_QUEUE, DRAW_BUFFER, DISPLAY_BUFFER, row, MAX_COLUMNS)));
-        }
-
-        THREAD_POOL.invokeAll(scheduleTasks);
+        THREAD_POOL.invokeAll(SCHEDULE_DRAWS);
     }
 
     public void draw() {
