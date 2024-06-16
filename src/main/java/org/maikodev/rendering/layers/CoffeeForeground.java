@@ -1,5 +1,6 @@
 package org.maikodev.rendering.layers;
 
+import org.maikodev.CupData;
 import org.maikodev.exceptions.CupFileNotFoundException;
 import org.maikodev.exceptions.CupLoadException;
 import org.maikodev.exceptions.InvalidRowSizeException;
@@ -13,7 +14,7 @@ import java.util.Scanner;
 
 public class CoffeeForeground {
     public CoffeeForeground() {
-        List<String> cupLines = loadCupFile();
+        List<String> cupLines = CupData.CUP_TOKENS;
 
         int rows = cupLines.size(), columns = cupLines.getLast().length();
         int totalPixels = rows * columns;
