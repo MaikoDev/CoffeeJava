@@ -40,7 +40,7 @@ public class ParticleLayer {
         PARTICLES = new Particle[MAX_PARTICLES];
         EMITTERS = new ParticleEmitter[NUMBER_OF_EMITTERS];
 
-        SPAWN_RATE_DISTRIBUTION = new PoissonDistribution(0.4f, 16);
+        SPAWN_RATE_DISTRIBUTION = new PoissonDistribution(50f, 60);
         SPAWN_LOCATION_DISTRIBUTION = new PoissonDistribution(MID_EMITTER_COUNT, NUMBER_OF_EMITTERS);
 
         initParticles();
@@ -69,6 +69,7 @@ public class ParticleLayer {
         boolean isSpawnTime = Duration.between(lastSpawnTime, currentCycleTime).compareTo(SPAWN_DELAY_TIME) > 0;
         if (isSpawnTime && !AVAILABLE_PARTICLES.isEmpty()) {
             spawnParticles();
+            lastSpawnTime = Instant.now();
         }
 
         timeSinceLastFixedUpdate = currentCycleTime;
@@ -76,6 +77,7 @@ public class ParticleLayer {
 
     public TerminalDisplayLayer getDisplay() { return DISPLAY_BUFFER; }
 
+    //region Private Methods
     private void spawnParticles() {
         int spawnCount = SPAWN_RATE_DISTRIBUTION.getRandomX();
 
@@ -109,15 +111,18 @@ public class ParticleLayer {
         int outerBeginColumn = MID_EMITTER_COLUMN - MID_EMITTER_COUNT, outerEndColumn = MID_EMITTER_COLUMN + MID_EMITTER_COUNT - 1;
         int innerBeginColumn = outerBeginColumn + 2, innerEndColumn = outerEndColumn - 3;
 
+        byte emitterRow = 13;
         for (int layerColumn = outerBeginColumn; layerColumn < outerEndColumn; layerColumn++) {
             if (layerColumn > innerBeginColumn && layerColumn < innerEndColumn) {
-                EMITTERS[layerColumn - outerBeginColumn] = new ParticleEmitter(new Position(layerColumn, MID_EMITTER_ROW), AVAILABLE_PARTICLES, ACTIVE_PARTICLES, AVERAGE_LIFETIME);
+                EMITTERS[layerColumn - outerBeginColumn] = new ParticleEmitter(new Position(layerColumn, emitterRow), AVAILABLE_PARTICLES, ACTIVE_PARTICLES, AVERAGE_LIFETIME);
             } else {
-                EMITTERS[layerColumn - outerBeginColumn] = new ParticleEmitter(new Position(layerColumn, MID_EMITTER_ROW - 1), AVAILABLE_PARTICLES, ACTIVE_PARTICLES, AVERAGE_LIFETIME);
+                EMITTERS[layerColumn - outerBeginColumn] = new ParticleEmitter(new Position(layerColumn, emitterRow - 1), AVAILABLE_PARTICLES, ACTIVE_PARTICLES, AVERAGE_LIFETIME);
             }
         }
     }
+    //endregion
 
+    //region Instance Variables
     private Instant timeSinceLastFixedUpdate = Instant.now();
     private Instant lastSpawnTime = Instant.now();
 
@@ -135,7 +140,7 @@ public class ParticleLayer {
     private final ParticleEmitter[] EMITTERS;
     private final byte MID_EMITTER_COUNT;
     private final byte MID_EMITTER_COLUMN;
-    private final byte MID_EMITTER_ROW = 13;
+    //private final byte MID_EMITTER_ROW = 13;
 
     private final byte MAX_PARTICLES;
     private final long AVERAGE_LIFETIME;
@@ -149,6 +154,7 @@ public class ParticleLayer {
     private final List<Callable<Object>> RASTERIZE_PARTICLES;
 
     private final static Duration FIXED_DELTA_TIME = Duration.ofMillis(20);
-    private final static Duration SPAWN_DELAY_TIME = Duration.ofSeconds(1);
+    private final static Duration SPAWN_DELAY_TIME = Duration.ofMillis(500);
     private final static byte NUMBER_OF_EMITTERS = 29;
+    //endregion
 }
