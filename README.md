@@ -9,6 +9,11 @@ This project is a small yet robust Java application designed to showcase my prof
 * **Double-buffer:** Implements double-buffered system for terminal drawing to minimize flickering and ensure only changed pixels need to be drawn to the terminal.
 * **Multi-threading:** Leverages multi-threading for draw buffer management, particle rasterization, and particle physics processing to enhance the performance and responsiveness of the particle system, ensuring smooth real-time updates.
 
+## How to Use:
+* You can either download the entire source code and compile your own jar artifact, or you can download the release jar under the release section of the repo.
+* If you are using a Windows-based terminal and are seeing ANSI codes being displayed to the terminal, you may need to add a new DWORD registry value called 'VirtualTerminalLevel' in HKEY_CURRENT_USER\Console and assign it to the value 1.
+* #### Please run the jar within a terminal via the command: java -jar CoffeeJava.jar
+
 ## Tech Stack:
 * #### Java 22 SDK
 * #### JetBrains IntelliJ (IDE)
