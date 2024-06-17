@@ -9,8 +9,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.maikodev.order.Position;
+import org.maikodev.order.SubdivRange;
 import org.maikodev.physics.*;
-import org.maikodev.probability.PoissonDistribution;
 import org.maikodev.rendering.TerminalDisplayLayer;
 import org.maikodev.thread.ThreadPool;
 import org.maikodev.thread.task.ClearDensityTask;
@@ -40,13 +40,11 @@ public class ParticleLayer {
         PARTICLES = new Particle[MAX_PARTICLES];
         EMITTERS = new ParticleEmitter[NUMBER_OF_EMITTERS];
 
-        SPAWN_RATE_DISTRIBUTION = new PoissonDistribution(50f, 60);
-        SPAWN_LOCATION_DISTRIBUTION = new PoissonDistribution(MID_EMITTER_COUNT, NUMBER_OF_EMITTERS);
+        NEXT_SPAWN_TIMES = new PriorityQueue<>();
+        SUBDIV_RANGES = new PriorityQueue<>(Collections.reverseOrder());
 
         initParticles();
         initEmitters();
-
-        spawnParticles();
     }
 
     public void update() throws InterruptedException {
@@ -65,11 +63,46 @@ public class ParticleLayer {
             AVAILABLE_PARTICLES.add(deadID);
         }
 
-        /* Emit new particles */
-        boolean isSpawnTime = Duration.between(lastSpawnTime, currentCycleTime).compareTo(SPAWN_DELAY_TIME) > 0;
-        if (isSpawnTime && !AVAILABLE_PARTICLES.isEmpty()) {
-            spawnParticles();
-            lastSpawnTime = Instant.now();
+        /* Schedule new particles */
+        boolean isScheduleTime = Duration.between(lastScheduleTime, currentCycleTime).compareTo(SPAWN_DELAY_TIME) > 0;
+        if (isScheduleTime && !AVAILABLE_PARTICLES.isEmpty()) {
+            int spawnCount = -1;
+
+            do {
+                spawnCount = (int)RANDOM_GENERATOR.nextGaussian(MEAN_SPAWN_AMOUNT, PARTICLE_STDDEV);
+            } while (spawnCount < 0);
+
+            long startRange = 0, endRange = SPAWN_DELAY_TIME.toMillis(), spawnTime;
+
+            /* Subdivide Spawn Delay */
+            for (int currentSpawnCount = 0; currentSpawnCount < spawnCount; currentSpawnCount++) {
+                spawnTime = RANDOM_GENERATOR.nextLong(startRange, endRange);
+
+                NEXT_SPAWN_TIMES.add(spawnTime);
+                SUBDIV_RANGES.add(new SubdivRange(startRange, spawnTime));
+                SUBDIV_RANGES.add(new SubdivRange(spawnTime, endRange));
+
+                SubdivRange maxRange = SUBDIV_RANGES.poll();
+
+                startRange = maxRange.startRange;
+                endRange = maxRange.endRange;
+            }
+
+            SUBDIV_RANGES.clear();
+            lastScheduleTime = Instant.now();
+        }
+
+        /* Emit particles */
+        boolean isSpawnTime = Duration.between(lastScheduleTime, currentCycleTime).compareTo(nextSpawnDuration) > 0;
+        if (isSpawnTime && !NEXT_SPAWN_TIMES.isEmpty()) {
+            int emitterIndex = -1;
+            do {
+                emitterIndex = (int)RANDOM_GENERATOR.nextGaussian(MID_EMITTER_COUNT, PARTICLE_STDDEV);
+
+            } while (emitterIndex < 0 || emitterIndex >= NUMBER_OF_EMITTERS);
+
+            EMITTERS[emitterIndex].emit(PARTICLES);
+            nextSpawnDuration = Duration.ofMillis(NEXT_SPAWN_TIMES.poll());
         }
 
         timeSinceLastFixedUpdate = currentCycleTime;
@@ -78,14 +111,6 @@ public class ParticleLayer {
     public TerminalDisplayLayer getDisplay() { return DISPLAY_BUFFER; }
 
     //region Private Methods
-    private void spawnParticles() {
-        int spawnCount = SPAWN_RATE_DISTRIBUTION.getRandomX();
-
-        for (int i = 0; i < spawnCount; i++) {
-            EMITTERS[SPAWN_LOCATION_DISTRIBUTION.getRandomX()].emit(PARTICLES);
-        }
-    }
-
     private void initParticles() {
         char[] pixelBuffer = DISPLAY_BUFFER.getPixelBuffer();
         boolean[] transparencyBuffer = DISPLAY_BUFFER.getTransparencyBuffer();
@@ -124,7 +149,11 @@ public class ParticleLayer {
 
     //region Instance Variables
     private Instant timeSinceLastFixedUpdate = Instant.now();
-    private Instant lastSpawnTime = Instant.now();
+    private Instant lastScheduleTime = Instant.now();
+    private Duration nextSpawnDuration = Duration.ZERO;
+
+    private final PriorityQueue<Long> NEXT_SPAWN_TIMES;
+    private final PriorityQueue<SubdivRange> SUBDIV_RANGES;
 
     private final int LAYER_WIDTH;
     private final int LAYER_HEIGHT;
@@ -134,13 +163,9 @@ public class ParticleLayer {
     private final ConcurrentLinkedQueue<Integer> CULLING_QUEUE;
     private final Particle[] PARTICLES;
 
-    private final PoissonDistribution SPAWN_RATE_DISTRIBUTION;
-    private final PoissonDistribution SPAWN_LOCATION_DISTRIBUTION;
-
     private final ParticleEmitter[] EMITTERS;
     private final byte MID_EMITTER_COUNT;
     private final byte MID_EMITTER_COLUMN;
-    //private final byte MID_EMITTER_ROW = 13;
 
     private final byte MAX_PARTICLES;
     private final long AVERAGE_LIFETIME;
@@ -154,7 +179,11 @@ public class ParticleLayer {
     private final List<Callable<Object>> RASTERIZE_PARTICLES;
 
     private final static Duration FIXED_DELTA_TIME = Duration.ofMillis(20);
-    private final static Duration SPAWN_DELAY_TIME = Duration.ofMillis(500);
+    private final static Duration SPAWN_DELAY_TIME = Duration.ofMillis(200);
+    private final static double MEAN_SPAWN_AMOUNT = 20.0;
+    private final static double PARTICLE_STDDEV = 4.0;
     private final static byte NUMBER_OF_EMITTERS = 29;
+
+    private final static Random RANDOM_GENERATOR = new Random();
     //endregion
 }
