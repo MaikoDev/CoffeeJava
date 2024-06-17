@@ -5,11 +5,9 @@ import org.maikodev.order.RowMajor;
 import org.maikodev.thread.task.ScheduleDrawTask;
 import org.maikodev.thread.ThreadPool;
 
-import java.io.IOException;
+
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class LayeredRenderer {
-    public LayeredRenderer(IRenderableLayer renderable, OutputStream out) throws NullPointerException, IOException {
+    public LayeredRenderer(IRenderableLayer renderable, OutputStream out) throws NullPointerException {
         if (renderable == null) throw new NullPointerException();
 
         this.MAX_ROWS = renderable.getBufferHeight();
