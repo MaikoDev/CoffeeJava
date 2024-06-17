@@ -11,8 +11,14 @@ public class ClearDensityTask implements Runnable {
 
     @Override
     public void run() {
+        int particleIndex;
+        byte particleDensity;
+
         for (int column = 0; column < MAX_COLUMN; column++) {
-            PARTICLE_DENSITY_MAP[RowMajor.getIndex(ASSIGNED_ROW, column, MAX_COLUMN)] = 0;
+            particleIndex = RowMajor.getIndex(ASSIGNED_ROW, column, MAX_COLUMN);
+            particleDensity = PARTICLE_DENSITY_MAP[particleIndex];
+
+            PARTICLE_DENSITY_MAP[particleIndex] = (particleDensity > 0) ? (byte)(particleDensity - 1) : particleDensity;
         }
     }
 

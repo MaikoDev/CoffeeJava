@@ -37,7 +37,7 @@ public class Particle implements Runnable {
 
         currentLifeTime = 0;
         isAvailable = false;
-        oscillationAmplitude = RANDOM_GENERATOR.nextFloat(1f, 2f);
+        oscillationAmplitude = RANDOM_GENERATOR.nextFloat(2f, 3f);
 
         return this;
     }
@@ -63,8 +63,9 @@ public class Particle implements Runnable {
 
     private synchronized static void updateDensity(byte[] densityMap, int approxPosition, float particleIntensity) {
         byte previousDensity = densityMap[approxPosition];
+        byte nextDensity = (byte)(previousDensity + DENSITY_RESOLUTION * particleIntensity);
 
-        densityMap[approxPosition] = (byte)(previousDensity + DENSITY_RESOLUTION * particleIntensity);
+        densityMap[approxPosition] = (nextDensity < DENSITY_MAX) ? nextDensity : previousDensity;
     }
 
     private float posX;
@@ -87,4 +88,5 @@ public class Particle implements Runnable {
 
     private static final Random RANDOM_GENERATOR = new Random();
     private static final int DENSITY_RESOLUTION = 8;
+    private static final int DENSITY_MAX = DENSITY_RESOLUTION * 2;
 }

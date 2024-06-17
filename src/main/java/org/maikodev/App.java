@@ -14,7 +14,7 @@ public class App {
         CoffeeForeground foregroundLayer = new CoffeeForeground();
         TerminalDisplayLayer coffeeDisplay = foregroundLayer.getDisplay();
 
-        particleLayer = new ParticleLayer(coffeeDisplay.getBufferWidth(), coffeeDisplay.getBufferHeight(), (byte)127, 2500);
+        particleLayer = new ParticleLayer(coffeeDisplay.getBufferWidth(), coffeeDisplay.getBufferHeight(), (byte)127, 2000);
 
         renderer = new LayeredRenderer(coffeeDisplay, System.out);
         renderer.addLayer(particleLayer.getDisplay(), 1);

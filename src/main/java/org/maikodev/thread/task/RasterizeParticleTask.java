@@ -44,5 +44,5 @@ public class RasterizeParticleTask implements Runnable {
     private final int ASSIGNED_ROW;
     private final int MAX_COLUMN;
 
-    public static final char[] PARTICLE_CHARACTERS = new char[]{ '░', '▒', '▓' };
+    public static final char[] PARTICLE_CHARACTERS = new char[]{ '.', 'o', '@' };
 }

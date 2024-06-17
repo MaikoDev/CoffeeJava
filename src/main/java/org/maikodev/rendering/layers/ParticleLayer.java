@@ -51,7 +51,6 @@ public class ParticleLayer {
         Instant currentCycleTime = Instant.now();
         if (Duration.between(timeSinceLastFixedUpdate, currentCycleTime).compareTo(FIXED_DELTA_TIME) < 0) return;
 
-        THREAD_POOL.invokeAll(CLEAR_DENSITY);
         THREAD_POOL.invokeAll(UPDATE_PHYSICS);
         THREAD_POOL.invokeAll(RASTERIZE_PARTICLES);
 
@@ -66,6 +65,8 @@ public class ParticleLayer {
         /* Schedule new particles */
         boolean isScheduleTime = Duration.between(lastScheduleTime, currentCycleTime).compareTo(SPAWN_DELAY_TIME) > 0;
         if (isScheduleTime && !AVAILABLE_PARTICLES.isEmpty()) {
+            THREAD_POOL.invokeAll(CLEAR_DENSITY);
+
             int spawnCount = -1;
 
             do {
@@ -136,7 +137,7 @@ public class ParticleLayer {
         int outerBeginColumn = MID_EMITTER_COLUMN - MID_EMITTER_COUNT, outerEndColumn = MID_EMITTER_COLUMN + MID_EMITTER_COUNT - 1;
         int innerBeginColumn = outerBeginColumn + 2, innerEndColumn = outerEndColumn - 3;
 
-        byte emitterRow = 13;
+        byte emitterRow = 19;
         for (int layerColumn = outerBeginColumn; layerColumn < outerEndColumn; layerColumn++) {
             if (layerColumn > innerBeginColumn && layerColumn < innerEndColumn) {
                 EMITTERS[layerColumn - outerBeginColumn] = new ParticleEmitter(new Position(layerColumn, emitterRow), AVAILABLE_PARTICLES, ACTIVE_PARTICLES, AVERAGE_LIFETIME);
@@ -179,8 +180,8 @@ public class ParticleLayer {
     private final List<Callable<Object>> RASTERIZE_PARTICLES;
 
     private final static Duration FIXED_DELTA_TIME = Duration.ofMillis(20);
-    private final static Duration SPAWN_DELAY_TIME = Duration.ofMillis(200);
-    private final static double MEAN_SPAWN_AMOUNT = 20.0;
+    private final static Duration SPAWN_DELAY_TIME = Duration.ofMillis(500);
+    private final static double MEAN_SPAWN_AMOUNT = 8.0;
     private final static double PARTICLE_STDDEV = 4.0;
     private final static byte NUMBER_OF_EMITTERS = 29;
 
